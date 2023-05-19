@@ -1,20 +1,25 @@
 const USER = require("../models/users");
+const bcrypt = require("bcrypt");
 
 exports.postAddUser = (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
-  USER.create({
-    name: name,
-    email: email,
-    password: password,
-  })
-    .then((result) => {
-      console.log("User Signed Up");
+
+  bcrypt.hash(password, 10, async (err, hash) => {
+    console.log(err);
+    await USER.create({
+      name: name,
+      email: email,
+      password: hash,
     })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((result) => {
+        console.log("User Signed Up");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
 };
 
 exports.postLogin = (req, res, next) => {
@@ -26,11 +31,15 @@ exports.postLogin = (req, res, next) => {
       if (!user) {
         res.status(404).json({ message: "User not found" });
       } else {
-        if (user.password === password) {
-          res.status(200).json({ message: "Login successful" });
-        } else {
-          res.status(401).json({ message: "Incorrect password" });
-        }
+        bcrypt.compare(password, user.password, (err, result) => {
+          if (err) {
+            res.status(500).json({ message: "Something Went Wrong" });
+          } else if (result === true) {
+            res.status(200).json({ message: "Login successful" });
+          } else {
+            res.status(401).json({ message: "Incorrect password" });
+          }
+        });
       }
     })
     .catch((err) => {
