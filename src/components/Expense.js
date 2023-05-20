@@ -6,7 +6,7 @@ const Expense = () => {
   const descRef = useRef();
   const categoryRef = useRef();
 
-  const [expense, setExpense] = useState([])
+  const [expense, setExpense] = useState([]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -28,15 +28,17 @@ const Expense = () => {
     console.log(response);
   };
 
+  const token = localStorage.getItem('token')
+
   useEffect(() => {
-    axios.get("http://localhost:4000/expense").then((response) => {
-      setExpense(response.data)
+    axios.get("http://localhost:4000/expense", { headers: {"Authorization" : token}}).then((response) => {
+      setExpense(response.data);
     });
   }, []);
 
   const deleteHandler = (id) => {
-    axios.delete(`http://localhost:4000/expense/${id}`)
-  }
+    axios.delete(`http://localhost:4000/expense/${id}`);
+  };
   return (
     <React.Fragment>
       <h1 className="header">EXPENSE TRACKER</h1>
@@ -53,7 +55,18 @@ const Expense = () => {
         </select>
         <button className="button2">ADD EXPENSE</button>
       </form>
-      {expense.map((expense) => <li className="header">{`${expense.amount} - ${expense.description} - ${expense.category}`} <button onClick={() => {deleteHandler(expense.id)}}>Delete Expense</button></li>)}
+      {expense.map((expense) => (
+        <li className="header">
+          {`${expense.amount} - ${expense.description} - ${expense.category}`}{" "}
+          <button
+            onClick={() => {
+              deleteHandler(expense.id);
+            }}
+          >
+            Delete Expense
+          </button>
+        </li>
+      ))}
     </React.Fragment>
   );
 };
