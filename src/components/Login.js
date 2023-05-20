@@ -24,6 +24,7 @@ const Login = () => {
       }
     );
     console.log(response.data)
+    navigate("/expense")
   };
 
   const signupHandler = () => {

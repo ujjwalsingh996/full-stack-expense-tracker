@@ -10,6 +10,10 @@ const User = require('./models/users');
 
 const addUserRoute = require('./routes/user');
 
+const addExpenseRoute = require("./routes/expenses")
+
+const EXPENSES = require('./models/expenseTable')
+
 const app = express();
 
 const cors = require('cors');
@@ -23,6 +27,8 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(addUserRoute);
+
+app.use(addExpenseRoute)
 
 sequelize
   .sync()
